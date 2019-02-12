@@ -1,5 +1,6 @@
 package saavn.streaming;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -41,4 +42,24 @@ public class Util {
 
         return sortedMap;
     }
+	
+	public static Calendar getStartDate(int numOfDays) {
+		Calendar startDate = Calendar.getInstance();
+		startDate.add(Calendar.DAY_OF_MONTH, -numOfDays);
+		startDate.set(Calendar.HOUR_OF_DAY, 0);
+		startDate.set(Calendar.MINUTE, 0);
+		startDate.set(Calendar.SECOND, 0);
+		startDate.set(Calendar.MILLISECOND, 0);
+		return startDate;
+	}
+	
+	public static Calendar getEndDate(int numOfDays) {
+		Calendar startDate = Calendar.getInstance();
+		startDate.add(Calendar.DAY_OF_MONTH, -numOfDays);
+		startDate.set(Calendar.HOUR_OF_DAY, 23);
+		startDate.set(Calendar.MINUTE, 59);
+		startDate.set(Calendar.SECOND, 59);
+		startDate.set(Calendar.MILLISECOND, 999);
+		return startDate;
+	}
 }

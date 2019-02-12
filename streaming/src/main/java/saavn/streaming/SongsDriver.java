@@ -27,7 +27,7 @@ public class SongsDriver extends Configured implements Tool {
 
 	public int run(String[] args) throws Exception {
 		 
-		Configuration conf = new Configuration();
+		Configuration conf = this.getConf();
 		
 		Job job = Job.getInstance(conf, "StreamingSongs_1");
 		job.setJarByClass(SongsDriver.class);
@@ -45,6 +45,8 @@ public class SongsDriver extends Configured implements Tool {
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1] + "Temp1"));
 
+		conf.set("BeginEndInDays", "7:1");
+		
 		job.waitForCompletion(true); // this is for the first job to complete
 		
 		job = Job.getInstance(conf, "StreamingSongs_2");
