@@ -1,0 +1,18 @@
+Direct Addressing is implemented using Array as data-structure and hashing (VoterID - 100000) 
+as a mechanism to assign/find the VoterId, which is used as the index of Array. Hashing is used 
+to perform direct assign/find based on a key, with assumption that voter id would always between
+100000 and 999999, and Candidate Id would always be between 100 and 999.
+ 
+Hashtable is using VoterId as its key. Since Hashtable accepts any unique number as its key, 
+there is no limitation on size. 
+
+Worst case running time would be similar for both - Direct Addressing and HashTable. 
+
+Add - O(1) - Its a direct assignment on specific index(Array)/key(Hashtable). There is no collision of keys in either case
+Find - O(1) - Its a direct read from specific index(Array)/key(Hashtable), with no collision of keys.
+Count - O(1) - For keeping the time complexity of count as O(1), an array is defined at 
+				common place. This array contains Candidate Id as its index and keep incrementing 
+				the votes count while reading votes information.
+				count(..) method its a direct read from specific index, instead of
+				looping for each vote record, hence time complexity is O(1).
+

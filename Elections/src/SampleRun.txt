@@ -1,0 +1,35 @@
+Press 1 for Direct Addressing, 2 for HashTable.
+1
+Choose option- Add Votes: A, Find Vote: F, Count Votes: C, Quit - q
+a
+Please provide file path containing Voter Id and Candidate Id:
+src/sample_data.txt
+Attempting to read from file: C:\Users\rajgoel0\eclipse-workspace\Elections\src\sample_data.txt
+Invalid vote info: [99999   999] - Invalid Voter Id: 99999, it should be between 100000 and 999999.
+Invalid vote info: [1000000 200] - Invalid Voter Id: 1000000, it should be between 100000 and 999999.
+Invalid vote info: [999999  99] - Invalid Candidate Id: 99, it should be between 100 and 999.
+Invalid vote info: [301104  1000] - Invalid Candidate Id: 1000, it should be between 100 and 999.
+Read 5 votes from given file.
+Choose option- Add Votes: A, Find Vote: F, Count Votes: C, Quit - q
+f
+Please enter Voter Id:
+301103
+Voter voted for Candidate Id: 200.
+Choose option- Add Votes: A, Find Vote: F, Count Votes: C, Quit - q
+f
+Please enter Voter Id:
+99999
+Error while finding Voter voted for: Invalid Voter Id: 99999, it should be between 100000 and 999999.
+Choose option- Add Votes: A, Find Vote: F, Count Votes: C, Quit - q
+c
+Please enter Candidate Id:
+500
+Candidate received 3 votes.
+Choose option- Add Votes: A, Find Vote: F, Count Votes: C, Quit - q
+c
+Please enter Candidate Id:
+999
+Either Candidate Id: 999 doesn't exists or received 0 votes.
+Choose option- Add Votes: A, Find Vote: F, Count Votes: C, Quit - q
+q
+Goodbye

@@ -1,0 +1,30 @@
+This project contains 4 Java files - 
+a. Main.java - Containing "main" function that can be run directly and doesn't need any parameters to pass on. 
+				It provides an interactive console application where user is provided with all options, which user can 
+				select with specified numeric keys.
+				
+b. ElectionCount.java - This is an abstract class that is inherited by ElectionCountDirect class and ElectionCountTable class. 
+				This class provides implementation following common functionality to inherited classes - 
+					1. processElection() - Provides option to users to select either of options between - Add Votes/Find/Count/Quit.
+								User can select any option by input'ing a number specified for resp. option.
+					2. add() - Let the user add voting information from some user provided file path. 
+								Uses the setVote(..) method, implemented in child class.
+					3. find() - Reads the VoterId from console and outputs the candidateId for which voter voted for. 
+								Uses the getVotedFor(..) method, implemented in child class.
+					4. count() - Reads the CandidateId from console and outputs the total votes received by candidate. 
+									Uses totalVotesForCandidates array to keep the votes count for each candidate.
+				
+				Following are abstract methods declared in ElectionCount and implemented in child classes (ElectionCountDirect and ElectionCountHashTable) - 
+					1. protected abstract void setVote(int voterId, int candidateId);
+					2. protected abstract Integer getVotedFor(int voterId);
+										 
+c. ElectionCountDirect.java - Defines an array as its data-structure to contain voting information 
+				and implements required abstract methods as declared in ElectionCount class. 
+				These methods works as per the array data-structure.
+				
+d. ElectionCountHashTable.java - Defines a hashtable as its data-structure to contain voting information 
+				and implements required abstract methods as declared in ElectionCount class. 
+				These methods works as per the hashtable data-structure.
+
+Sample file is attached along with - sample_data.txt. First 5 records are valid records, where as last 4 are invalid records.
+Please see the attached file - SampleRun.txt, to have a look at sample run.
