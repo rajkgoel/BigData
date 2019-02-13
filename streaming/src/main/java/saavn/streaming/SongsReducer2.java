@@ -9,6 +9,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 /*
  * Do the summation of streaming count for each songId
  * and write songId, sum(stream_count) to context
+ *
+ * PS:: This class is also used as a Combiner for SongsMapper2
  */
 public class SongsReducer2 extends Reducer<Text, IntWritable, Text, IntWritable>{
 

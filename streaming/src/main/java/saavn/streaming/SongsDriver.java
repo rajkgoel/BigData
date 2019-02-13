@@ -1,5 +1,7 @@
 package saavn.streaming;
 
+import java.io.IOException;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -28,7 +30,64 @@ public class SongsDriver extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		 
 		Configuration conf = this.getConf();
+		conf.set("BeginEndInDays", "7:1"); //Default values for Begin/End in Days
+		  	
+		try {
+			Job job = initializeFirstJob(args, conf);
+			job.waitForCompletion(true); // this is for the first job to complete
+			
+			job = initializeSecondJob(args, conf);
+			job.waitForCompletion(true); // this is for the second job to complete
+			
+			job = initializeThirdJob(args, conf);
+
+			return job.waitForCompletion(true)? 0:1;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return 0;
+   	
+	}
+
+	private Job initializeThirdJob(String[] args, Configuration conf) throws IOException {
+		Job job;
+		job = Job.getInstance(conf, "StreamingSongs_3");
+		job.setJarByClass(SongsDriver.class);
+				
+		job.setMapperClass(SongsMapper3.class);
+		job.setReducerClass(SongsReducer3.class); //No Combiner is required here
 		
+		job.setMapOutputKeyClass(IntWritable.class);
+		job.setMapOutputValueClass(Text.class);
+		
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(IntWritable.class);
+		
+		FileInputFormat.addInputPath(job, new Path(args[1] + "Temp2"));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		return job;
+	}
+
+	private Job initializeSecondJob(String[] args, Configuration conf) throws IOException {
+		Job job;
+		job = Job.getInstance(conf, "StreamingSongs_2");
+		job.setJarByClass(SongsDriver.class);
+				
+		job.setMapperClass(SongsMapper2.class);
+		job.setCombinerClass(SongsReducer2.class);
+		job.setReducerClass(SongsReducer2.class);
+		
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(IntWritable.class);
+		
+		FileInputFormat.addInputPath(job, new Path(args[1] + "Temp1"));
+		FileOutputFormat.setOutputPath(job, new Path(args[1] + "Temp2"));
+		return job;
+	}
+
+	private Job initializeFirstJob(String[] args, Configuration conf) throws IOException {
 		Job job = Job.getInstance(conf, "StreamingSongs_1");
 		job.setJarByClass(SongsDriver.class);
 			
@@ -44,59 +103,7 @@ public class SongsDriver extends Configured implements Tool {
 		
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1] + "Temp1"));
-
-		conf.set("BeginEndInDays", "7:1");
-		
-		job.waitForCompletion(true); // this is for the first job to complete
-		
-		job = Job.getInstance(conf, "StreamingSongs_2");
-		job.setJarByClass(SongsDriver.class);
-				
-		job.setMapperClass(SongsMapper2.class);
-		job.setCombinerClass(SongsReducer2.class);
-		job.setReducerClass(SongsReducer2.class);
-		
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(IntWritable.class);
-		
-		FileInputFormat.addInputPath(job, new Path(args[1] + "Temp1"));
-		FileOutputFormat.setOutputPath(job, new Path(args[1] + "Temp2"));
-		
-		job.waitForCompletion(true); // this is for the second job to complete
-		
-		job = Job.getInstance(conf, "StreamingSongs_3");
-		job.setJarByClass(SongsDriver.class);
-				
-		job.setMapperClass(SongsMapper3.class);
-		job.setReducerClass(SongsReducer3.class);
-		
-		job.setMapOutputKeyClass(IntWritable.class);
-		job.setMapOutputValueClass(Text.class);
-		
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(IntWritable.class);
-		
-		FileInputFormat.addInputPath(job, new Path(args[1] + "Temp2"));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-		  	
-		try {
-           return job.waitForCompletion(true)? 0:1;
-//			if (ret) {
-//				String checkChar = conf.get("checkChar");
-//				System.out.println("p's average length   = " + 
-//						job.getCounters().findCounter(InfoCounter.LENTGH).getValue() / job.getCounters().findCounter(InfoCounter.COUNT).getValue());
-//				return 0;
-//			}
-		    //return 1;
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-   	
+		return job;
 	}
 
 }
