@@ -10,8 +10,12 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 /*
- * Does sorting of records based on sum of the number of times any
- * song has been listened, in the complete duration
+ * 1. Reads (SongId, Sum(StreamingCount)) from input record 
+ * 		and store information (Sum(StreamingCount), SongId) in a TreeMap
+ * 2. If TreeMap size is increasing more then size 100, then remove the
+ * 		record of least size.
+ * 3. Once the Mapper is finished, flush TreepMap data into context while converting
+ * 		Sum(StreamingCount) into Ranking. Max gets 1, and so on.
  */
 public class SongsMapper3 extends Mapper<LongWritable, Text, IntWritable, Text> {
 	private TreeMap<Integer, Text> sortedMaxStreamed = new TreeMap<Integer, Text>();

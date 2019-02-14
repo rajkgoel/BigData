@@ -11,6 +11,7 @@ import org.apache.hadoop.mapreduce.Reducer;
  * Combiner class, used with the first mapper - SongsMapper1 to sum the streamingCount at Mapper level
  * Sums the StreamingCount of Songs based on StreamingDate (key) and SongId
  * 
+ * Combiner is coded different from Reducer as some functionality is required differently than Reducer 
  */
 public class SongsCombiner extends Reducer<Text, Song, Text, Song> {
 	
