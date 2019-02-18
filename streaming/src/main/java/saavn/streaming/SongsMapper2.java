@@ -6,7 +6,7 @@ import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.Mapper;
 
 /*
- * Read record, parse songId and its streaming count, and write it to context
+ * Read record, parse songId and Song(with Sum(streamingCount)), and write it to context
  */
 public class SongsMapper2 extends Mapper<LongWritable, Text, Text, Song>  {
 
@@ -19,6 +19,8 @@ public class SongsMapper2 extends Mapper<LongWritable, Text, Text, Song>  {
 		String[] values = cols[1].split(",");
 		IntWritable streamingCount = new IntWritable(Integer.parseInt(values[1].trim()));
 		Text streamingDate = new Text(values[2].trim());
+		
+		//Write to context
 		context.write(songId, new Song(songId, streamingCount, streamingDate));
 	}
 }

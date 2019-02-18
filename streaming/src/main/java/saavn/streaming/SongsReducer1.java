@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  * This is a next step to SongsCombiner.
  * Does the sum(StreamingCount) for each SongId for passed on StreamingDate as Key. 
  * If any weights need to be applied on SongIds, based on StreamingDate, it can be done here.
- * It then sorts the data in descending order and  writes (SongId, Sum(StreamingCount) to context.
+ * It then sorts the data in descending order and  writes (SongId, Song(with sum(streamingCount)) to context.
  */
 public class SongsReducer1 extends Reducer<Text, Song, Text, Song>{
 	
@@ -39,7 +39,7 @@ public class SongsReducer1 extends Reducer<Text, Song, Text, Song>{
 	        //Sort the StreamingSong based on StreamingCount, in descending order.
 	        Map<String, Integer> sortedSongs = Util.sortByComparator(songs, DESC);
 	        
-	        //Write (SongId, Sum(StreamingCount)) to context
+	        //Write (SongId, Song) to context
 	        for(Map.Entry<String, Integer> e : sortedSongs.entrySet()) {
 	            String songId = e.getKey();
 	            Integer count = e.getValue();

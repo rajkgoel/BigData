@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  * Combiner class, used with the first mapper - SongsMapper1 to sum the streamingCount at Mapper level
  * Sums the StreamingCount of Songs based on StreamingDate (key) and SongId
  * 
- * Combiner is coded different from Reducer as some functionality is required differently than Reducer 
+ * Combiner is coded different from Reducer as Reduce require some extra functionality 
  */
 public class SongsCombiner extends Reducer<Text, Song, Text, Song> {
 	SimpleDateFormat dtFormat = new SimpleDateFormat ("yyyy-MM-dd");

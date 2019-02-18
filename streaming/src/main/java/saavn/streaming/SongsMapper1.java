@@ -28,7 +28,8 @@ public class SongsMapper1 extends Mapper<LongWritable, Text, Text, Song> {
 	@Override
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		Logger logger = Logger.getLogger(SongsMapper1.class);
-				
+		
+		//Parse begin/end days from input parameters
 		String[] beginEndDays = context.getConfiguration().get("BeginEndInDays").split(":");
 		logger.debug(String.format("Received Params - Begin: %s, End: %s", beginEndDays[0], beginEndDays[1]));
 		
@@ -38,12 +39,15 @@ public class SongsMapper1 extends Mapper<LongWritable, Text, Text, Song> {
 		if(beginDateInDays < endDateInDays) 
 			throw new IOException("Begin From should be earlier then End till days. E.g. 7:1");
 		
+		//Calculate Start/End Date for streaming data filtering
 		Calendar startDate = Util.getStartDate(beginDateInDays);
 		Calendar endDate = Util.getEndDate(endDateInDays);
 		
 		logger.debug(String.format("Records should be between: %s - %s", 
 				timeDateFormat.format(startDate.getTime()),
 				timeDateFormat.format(endDate.getTime())));
+		
+		//Parse record and do required validation
 		//V-HvGNCt,477552b6e41394619569fbfb9a590d5b,1512143128,15,2017-12-01
 		String cols [] = value.toString().split(",");
 		if(cols.length < 5) {
@@ -65,6 +69,7 @@ public class SongsMapper1 extends Mapper<LongWritable, Text, Text, Song> {
 		}
 		
 		try {
+			//Return if streaming dates are not matching with input dates
 			Date streamingDate = simpleDateFormat.parse(playDate);
 			if(streamingDate.compareTo(startDate.getTime()) < 0 || streamingDate.compareTo(endDate.getTime()) > 0) {
 				logger.debug(String.format("Ignoring record for out of bound date, StartDate: %s, EndDate: %s, StreamingDate: %s",
@@ -78,7 +83,7 @@ public class SongsMapper1 extends Mapper<LongWritable, Text, Text, Song> {
 			logger.error("Exception while finding streaming date.");
 		}
 	
-		//System.out.println(String.format("Received arguments: %s, %s, %s", songId, 1, playDate));
+		//Write parsed and filtered record for further processing 
 		Song song = new Song(songId, 1, playDate);
 		logger.debug("Processing record: " + value.toString());
 		context.write(new Text(playDate), song); 

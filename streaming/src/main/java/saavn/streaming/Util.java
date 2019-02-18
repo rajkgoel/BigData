@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 public class Util {
 
+	//Utility method for sorting Map in given order
 	public static Map<String, Integer> sortByComparator(Map<String, Integer> unsortMap, final boolean order)
     {
         List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(unsortMap.entrySet());
@@ -43,6 +44,8 @@ public class Util {
         return sortedMap;
     }
 	
+	//Utility method for finding Start Date/Time from backward
+	//Returns time as 00:00:00 
 	public static Calendar getStartDate(int numOfDays) {
 		Calendar startDate = Calendar.getInstance();
 		startDate.add(Calendar.DAY_OF_MONTH, -numOfDays);
@@ -52,7 +55,9 @@ public class Util {
 		startDate.set(Calendar.MILLISECOND, 0);
 		return startDate;
 	}
-	
+
+	//Utility method for finding End Date/Time from backward
+	//returns time as 23:59:59 
 	public static Calendar getEndDate(int numOfDays) {
 		Calendar startDate = Calendar.getInstance();
 		startDate.add(Calendar.DAY_OF_MONTH, -numOfDays);

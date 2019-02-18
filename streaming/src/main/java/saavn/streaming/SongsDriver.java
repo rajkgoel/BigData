@@ -70,8 +70,8 @@ public class SongsDriver extends Configured implements Tool {
 			job.waitForCompletion(true); // this is for the second job to complete
 			
 			job = initializeThirdJob(args, conf);
-
-			return job.waitForCompletion(true)? 0:1;
+			return job.waitForCompletion(true)? 0:1; // this is for the second job to complete
+			
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -81,6 +81,9 @@ public class SongsDriver extends Configured implements Tool {
    	
 	}
 
+	/*
+	 * Removes previously created output folders, if any existing
+	 */
 	private void deleteOutputFolders(Configuration conf, String outFolder) {
 		
 		try {
@@ -97,6 +100,9 @@ public class SongsDriver extends Configured implements Tool {
 		
 	}
 
+	/*
+	 * Initializes 3rd Mapper/Reducer, assigns its input/output paths 
+	 */
 	private Job initializeThirdJob(String[] args, Configuration conf) throws IOException {
 		Job job;
 		job = Job.getInstance(conf, "StreamingSongs_3");
@@ -116,6 +122,9 @@ public class SongsDriver extends Configured implements Tool {
 		return job;
 	}
 
+	/*
+	 * Initializes 3rd Mapper/Reducer, assigns its input/output paths 
+	 */
 	private Job initializeSecondJob(String[] args, Configuration conf) throws IOException {
 		Job job;
 		job = Job.getInstance(conf, "StreamingSongs_2");
@@ -135,24 +144,5 @@ public class SongsDriver extends Configured implements Tool {
 		FileOutputFormat.setOutputPath(job, new Path(args[1] + "Temp2"));
 		return job;
 	}
-
-//	private Job initializeFirstJob(String[] args, Configuration conf) throws IOException {
-//		Job job = Job.getInstance(conf, "StreamingSongs_1");
-//		job.setJarByClass(SongsDriver.class);
-//			
-//		job.setMapperClass(SongsMapper1.class);
-//		job.setCombinerClass(SongsCombiner.class);
-//		job.setReducerClass(SongsReducer1.class);
-//		
-//		job.setMapOutputKeyClass(Text.class);
-//		job.setMapOutputValueClass(Song.class);
-//			
-//		job.setOutputKeyClass(Text.class);
-//		job.setOutputValueClass(IntWritable.class);
-//		
-//		FileInputFormat.addInputPath(job, new Path(args[0]));
-//		FileOutputFormat.setOutputPath(job, new Path(args[1] + "Temp1"));
-//		return job;
-//	}
 
 }
