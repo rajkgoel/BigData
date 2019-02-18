@@ -1,8 +1,8 @@
 package saavn.streaming;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -17,36 +17,36 @@ import org.apache.log4j.Logger;
  */
 public class SongsReducer2 extends Reducer<Text, Song, Text, IntWritable>{
 	
+	Logger logger = Logger.getLogger(SongsReducer2.class);
+	
 	public void reduce(Text key, Iterable<Song> values, Context context) 
 			throws IOException, InterruptedException {
 		
-		Map<Text, Song> validSongs = removeDataAnomalies(key, values);
+        List<Song> validSongs = removeDataAnomalies(values);
 		
 		//Sum the streaming count for given key(songId)
 		int sum = 0;
-		for(Map.Entry<Text, Song> entry: validSongs.entrySet()) {
-			sum += entry.getValue().getCount().get();
+		for(Song entry: validSongs) {
+			sum += entry.getCount().get();
 		}
 		context.write(key, new IntWritable(sum));
 	}
 
-	private Map<Text, Song> removeDataAnomalies(Text key, Iterable<Song> values) {
-		Logger logger = Logger.getLogger(SongsMapper1.class);
-		
-        Song prev = null;
-        Map<Text, Song> validSongs = new HashMap<Text, Song>();
+	private List<Song> removeDataAnomalies(Iterable<Song> values) {
+		Song prev = null;
+        List<Song> validSongs = new ArrayList<Song>();
 		for(Song current : values) {
 			if (prev != null) {
 				//Ignore record if streaming count has gone higher/fallen by 1000 times
-				if (current.getCount().get() * 1000 >= prev.getCount().get() ||
-					current.getCount().get() <= prev.getCount().get() * 1000) {
+				if ((current.getCount().get() >= prev.getCount().get() * 1000) ||
+					(current.getCount().get() * 1000 <= prev.getCount().get() )) {
 					logger.error("Seems anomoly in streaming data, ignoring record -" + current.toString());
 					prev = current;
 					continue;
 				}
 			}
 			prev = current;
-			validSongs.put(key, current);
+			validSongs.add(current);
         }
 		return validSongs;
 	}
