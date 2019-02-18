@@ -19,6 +19,7 @@ import org.apache.hadoop.mapreduce.Mapper;
  */
 public class SongsMapper3 extends Mapper<LongWritable, Text, IntWritable, Text> {
 	private TreeMap<Integer, Text> sortedMaxStreamed = new TreeMap<Integer, Text>();
+	private Integer totalItems = 0;
 	        
     @Override
     protected void map(LongWritable key, Text value, Context context) throws InterruptedException, IOException {
@@ -29,13 +30,37 @@ public class SongsMapper3 extends Mapper<LongWritable, Text, IntWritable, Text> 
         int listenedCount = -1 * Integer.parseInt(cols[1]);
         
         //Store the count and songId in TreeMap, to keep records in sorted order
-        sortedMaxStreamed.put(listenedCount, new Text(songId));
-
+        if (sortedMaxStreamed.containsKey(listenedCount))
+        {
+        	Text existing = sortedMaxStreamed.get(listenedCount);
+        	sortedMaxStreamed.put(listenedCount, new Text(String.format("%s,%s",existing.toString(), songId)));
+        }
+        else
+        {
+        	sortedMaxStreamed.put(listenedCount, new Text(songId));
+        }
+        
+        totalItems++;
         //If number of records are more then required then remove the least listened song
-		if (sortedMaxStreamed.size() > 100) {
-			sortedMaxStreamed.remove(sortedMaxStreamed.lastKey());
-		}
+        if (totalItems > 100 || sortedMaxStreamed.size() > 100) {
+        	removeOneSongFromLastElement();
+        }
     }
+
+	private void removeOneSongFromLastElement() {
+		Integer lastKey = sortedMaxStreamed.lastKey();
+		String[] lastItems = sortedMaxStreamed.get(lastKey).toString().split(",");
+		if (lastItems.length <= 1)
+			sortedMaxStreamed.remove(sortedMaxStreamed.lastKey());
+		else {
+			String songIds = "";
+			for(int i=0;i<lastItems.length-1;i++) {
+				songIds = songIds + lastItems[i] + ",";
+			}
+			songIds = songIds.substring(0, songIds.length() -1);
+			sortedMaxStreamed.put(lastKey, new Text(songIds));
+		}
+	}
     
 	@Override
 	protected void cleanup(Context context) throws IOException,
@@ -44,8 +69,13 @@ public class SongsMapper3 extends Mapper<LongWritable, Text, IntWritable, Text> 
 		int count = 1;
 		for (Map.Entry<Integer, Text> t : sortedMaxStreamed.entrySet()) {
 			//Write the Rank of SongId, instead of streamingCount
-			context.write(new IntWritable(count), t.getValue());
-			count++;
+			String[] songIds = t.getValue().toString().split(",");
+			for(String songId: songIds) {
+				context.write(new IntWritable(count), new Text(songId));
+				count++;
+			}
+			if (count > 100)
+				break;
 		}
 	}
 }

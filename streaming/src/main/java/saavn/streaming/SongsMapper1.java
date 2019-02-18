@@ -24,14 +24,13 @@ public class SongsMapper1 extends Mapper<LongWritable, Text, Text, Song> {
 	
 	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	SimpleDateFormat timeDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	//hadoop fs -copyToLocal output/part* Downloads/windowsDir/saavn/
 	
 	@Override
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		Logger logger = Logger.getLogger(SongsMapper1.class);
 				
 		String[] beginEndDays = context.getConfiguration().get("BeginEndInDays").split(":");
-//		logger.info(String.format("Received Params - Begin: %s, End: %s", beginEndDays[0], beginEndDays[1]));
+		logger.debug(String.format("Received Params - Begin: %s, End: %s", beginEndDays[0], beginEndDays[1]));
 		
 		int beginDateInDays = Integer.parseInt(beginEndDays[0]);
 		int endDateInDays = Integer.parseInt(beginEndDays[1]);
@@ -42,9 +41,9 @@ public class SongsMapper1 extends Mapper<LongWritable, Text, Text, Song> {
 		Calendar startDate = Util.getStartDate(beginDateInDays);
 		Calendar endDate = Util.getEndDate(endDateInDays);
 		
-//		logger.info(String.format("Records should be between: %s - %s", 
-//				timeDateFormat.format(startDate.getTime()),
-//				timeDateFormat.format(endDate.getTime())));
+		logger.debug(String.format("Records should be between: %s - %s", 
+				timeDateFormat.format(startDate.getTime()),
+				timeDateFormat.format(endDate.getTime())));
 		//V-HvGNCt,477552b6e41394619569fbfb9a590d5b,1512143128,15,2017-12-01
 		String cols [] = value.toString().split(",");
 		if(cols.length < 5) {
@@ -52,10 +51,9 @@ public class SongsMapper1 extends Mapper<LongWritable, Text, Text, Song> {
 			return;
 		}
 		
+		System.out.println(String.format("Read line: %s", value));
 		String songId = cols[0];
-		//Long unixDate = Long.parseLong(cols[2]);
 		String playDate = cols[4];
-		//Date date = Date.from(Instant.ofEpochSecond(playDate));
 		
 		if (songId.length() <= 0) {
 			logger.warn("Invalid streaming record, songId is blank: " + value.toString());
@@ -76,13 +74,13 @@ public class SongsMapper1 extends Mapper<LongWritable, Text, Text, Song> {
 				return;
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error("Exception while finding streaming date.");
 		}
 	
-		Song song = new Song(songId, 1);
-		//logger.info("Processing record: " + value.toString());
+		//System.out.println(String.format("Received arguments: %s, %s, %s", songId, 1, playDate));
+		Song song = new Song(songId, 1, playDate);
+		logger.debug("Processing record: " + value.toString());
 		context.write(new Text(playDate), song); 
 	}
 
